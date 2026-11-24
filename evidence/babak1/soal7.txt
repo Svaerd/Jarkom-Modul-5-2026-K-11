@@ -1,0 +1,38 @@
+=== SOAL 7: LAYANAN LISTENER MAGI (CASPER, BALTHASAR, MELCHIOR) ===
+
+--- Status paket & listener @ Magi-Casper ---
+iptables 1.8.11-2 (install ok installed)
+netcat-traditional 1.10-50 (install ok installed)
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                 
+LISTEN 0      1            0.0.0.0:5000      0.0.0.0:*    users:(("nc.traditional",pid=594,fd=3))
+
+--- Status paket & listener @ Magi-Balthasar ---
+iptables 1.8.11-2 (install ok installed)
+netcat-traditional 1.10-50 (install ok installed)
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                 
+LISTEN 0      1            0.0.0.0:5001      0.0.0.0:*    users:(("nc.traditional",pid=587,fd=3))
+LISTEN 0      1            0.0.0.0:5000      0.0.0.0:*    users:(("nc.traditional",pid=582,fd=3))
+
+--- Status paket & listener @ Magi-Melchior ---
+iptables 1.8.11-2 (install ok installed)
+netcat-traditional 1.10-50 (install ok installed)
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                 
+LISTEN 0      1            0.0.0.0:5000      0.0.0.0:*    users:(("nc.traditional",pid=579,fd=3))
+
+--- Uji kirim pesan dari Lilith ---
+[OK] Lilith -> Magi-Casper (10.69.4.58:5000): 'Pesan Lilith -> Casper 5000' (exit=0)
+[OK] Lilith -> Magi-Balthasar (10.69.4.59:5000): 'Pesan Lilith -> Balthasar 5000' (exit=0)
+[OK] Lilith -> Magi-Balthasar (10.69.4.59:5001): 'Pesan Lilith -> Balthasar 5001' (exit=0)
+[OK] Lilith -> Magi-Melchior (10.69.4.60:5000): 'Pesan Lilith -> Melchior 5000' (exit=0)
+
+--- Log diterima @ Magi-Casper port 5000 (/var/log/magi-5000.log) ---
+Pesan Lilith -> Casper 5000
+
+--- Log diterima @ Magi-Balthasar port 5000 (/var/log/magi-5000.log) ---
+Pesan Lilith -> Balthasar 5000
+
+--- Log diterima @ Magi-Balthasar port 5001 (/var/log/magi-5001.log) ---
+Pesan Lilith -> Balthasar 5001
+
+--- Log diterima @ Magi-Melchior port 5000 (/var/log/magi-5000.log) ---
+Pesan Lilith -> Melchior 5000

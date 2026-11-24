@@ -12,7 +12,7 @@ Laporan Praktikum Modul 5 — Komunikasi Data & Jaringan Komputer 2026: **Operat
 ## Status Pengerjaan
 
 - [x] **Tahap 1 — Soal 1:** Perhitungan VLSM (`10.69.0.0/21`), pohon IP, spreadsheet, serta pemetaan interface & routing statis.
-- [ ] **Tahap 2 — Babak 1 (Soal 2–8):** Pembangunan topologi GNS3, routing statis, NAT + firewall `Gendo`, IP permanen host, serta layanan MAGI, `Pen-Pen`, dan `Tokyo3-Core`.
+- [x] **Tahap 2 — Babak 1 (Soal 2–8):** Pembangunan topologi GNS3, routing statis, NAT + firewall `Gendo`, IP permanen host, serta layanan MAGI, `Pen-Pen`, dan `Tokyo3-Core`.
 - [ ] **Tahap 3 — Babak 2 (Soal 9–12):** Investigasi & perbaikan sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`) dan mode hantu `Magi-Casper`.
 - [ ] **Babak 3 & Final (Soal 13–20):** Pengamanan `Magi-Balthasar`, `Pen-Pen`, `Tokyo3-Core`, pengalihan di `Fuyutsuki`, gerbang zona sensitif `Shigeru`, isolasi `Armisael`, dan uji pemulihan (dikerjakan partner).
 
@@ -133,3 +133,116 @@ Sumber diagram: [vlsm-tree.dot](docs/images/vlsm-tree.dot) ([SVG](docs/images/vl
    - **Rentang usable:** `10.69.4.1 - 10.69.4.30`
    - **Broadcast:** `10.69.4.0 + 32 - 1 = 10.69.4.31`
    - **IP terpakai / Sisa:** `15` terpakai (`14` host + `1` gateway), sisa $30 - 15 = 15$ IP usable.
+
+---
+
+### Soal 2: Geofront Gelap Gulita (Interface Router & IP Forwarding)
+
+Topologi `60` node dan `59` kabel dibangun pada project GNS3 `K-11-MODUL-5` melalui [build_topology.py](tools/build_topology.py). Setiap router memperoleh konfigurasi `/etc/network/interfaces` sesuai [docs/alamat.md](docs/alamat.md) dan IPv4 forwarding (`net.ipv4.ip_forward = 1`). Hanya `Gendo` (`eth0`) yang tersambung ke `NAT1` melalui DHCP (`192.168.122.82/24`).
+
+Bukti lengkap seluruh `17` router (`ip -br a`, `ip_forward = 1`) serta uji ping dua arah (`32` arah pada `16` link router-ke-router): [evidence/babak1/soal2.txt](evidence/babak1/soal2.txt).
+
+```text
+--- Gendo (dijalankan di Gendo) ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+eth0             UNKNOWN        192.168.122.82/24
+eth1             UNKNOWN        10.69.4.105/30
+eth2             UNKNOWN        10.69.4.109/30
+eth3             UNKNOWN        10.69.4.149/30
+eth4             UNKNOWN        10.69.4.153/30
+eth5             UNKNOWN        10.69.4.157/30
+eth6             UNKNOWN        10.69.4.161/30
+eth7             UNKNOWN        10.69.4.165/30
+eth8             UNKNOWN        10.69.4.169/30
+net.ipv4.ip_forward = 1
+```
+
+Seluruh `32` ping ujung-ke-ujung link `K1`–`K16` tercatat `0% packet loss`.
+
+---
+
+### Soal 3: Pulau-Pulau yang Terpisah (Routing Statis & Ringkasan CIDR)
+
+Setiap router dikonfigurasi dengan script idempoten (`/root/<nama>.sh`, cadangan di [script/](script/)) memakai `ip route replace`. Router di bawah `Gendo` memakai `default` ke router induk + rute spesifik LAN anak, sedangkan `Gendo` memakai `default` via `NAT1` (`eth0`) dan `21` rute cabang hasil `4` ringkasan CIDR eksak (`10.69.4.80/28`, `10.69.4.112/29`, `10.69.4.120/29`, `10.69.4.128/29`). Rincian lengkap: [docs/routing.md](docs/routing.md) dan [evidence/babak1/soal3.txt](evidence/babak1/soal3.txt).
+
+Uji sementara dari `Armisael` (`10.69.4.83`) ke tiga cabang berbeda berhasil (`0% packet loss`):
+- `ping -c 3 10.69.4.74` (`Lilith`): `3 transmitted, 3 received, 0% packet loss`
+- `ping -c 3 10.69.3.130` (`Sachiel`): `3 transmitted, 3 received, 0% packet loss`
+- `ping -c 3 10.69.2.2` (`Comm-Net`): `3 transmitted, 3 received, 0% packet loss`
+
+---
+
+### Soal 4: Haus Kabar dari Dunia Luar (NAT Dinamis & DNS)
+
+Pada `Gendo` ([script/gendo.sh](script/gendo.sh)), ditambahkan NAT dinamis (`MASQUERADE`) berbasis interface keluar `eth0` dan prefix internal `10.69.0.0/21` sehingga konfigurasi tidak bergantung pada IP DHCP `NAT1` yang bisa berubah, sementara traffic antar-LAN tetap memakai IP asli pengirimnya:
+
+```sh
+iptables -t nat -C POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE 2>/dev/null || \
+  iptables -t nat -A POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE
+```
+
+Bukti di [evidence/babak1/soal4.txt](evidence/babak1/soal4.txt):
+- Ping antar-LAN `Armisael` → `Lilith` (`10.69.4.74`) **tidak** menaikkan counter `MASQUERADE` (`0 packets`).
+- `Armisael` dan `Lilith` berhasil `ping -c 3 8.8.8.8` dan `ping -c 3 deb.debian.org` (`0% packet loss`), dan counter `MASQUERADE` di `Gendo` naik menjadi `12 pkts / 868 bytes`.
+
+---
+
+### Soal 5: Pintu Depan Dikunci Rapat (Lockdown `Gendo`)
+
+Seluruh aturan Soal 2–5 digabung secara idempoten di `/root/gendo.sh` ([script/gendo.sh](script/gendo.sh)): policy `INPUT` dan `FORWARD` diubah ke `DROP` setelah mengizinkan `lo`, `ESTABLISHED,RELATED`, DHCP dari `NAT1` (`eth0` UDP `67 -> 68`), serta traffic `10.69.0.0/21` (`! -i eth0`) untuk internet (`-o eth0`), antar-LAN (`! -o eth0`), dan ke `Gendo` sendiri.
+
+```text
+--- iptables -S @ Gendo ---
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p udp -m udp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -s 10.69.0.0/21 ! -i eth0 -j ACCEPT
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 ! -i eth0 -o eth0 -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 -d 10.69.0.0/21 ! -i eth0 ! -o eth0 -j ACCEPT
+```
+
+Bukti di [evidence/babak1/soal5.txt](evidence/babak1/soal5.txt):
+- Menjalankan `bash /root/gendo.sh` dua kali berturut-turut menghasilkan rule identik (`10` baris `filter`, `5` baris `nat`).
+- `Armisael` tetap berhasil ping ke `8.8.8.8`, `Lilith` (`10.69.4.74`), dan `Gendo` (`10.69.4.165`), sementara ping baru dari sisi `NAT1` (`virbr0` → `192.168.122.82`) ditolak (`100% packet loss`).
+
+---
+
+### Soal 6: Alamat Para Pilot (IP Statis Permanen 25 Host)
+
+Seluruh `25` host non-router dikonfigurasi permanen melalui `/etc/network/interfaces` dan `/root/init.sh` (resolver DNS saat boot). `Unit-01` di-restart penuh (`stop` + `start`) untuk memverifikasi persistensi:
+
+```text
+--- Unit-01 (dijalankan di Unit-01 setelah restart) ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128
+eth0             UNKNOWN        10.69.4.66/29
+default via 10.69.4.65 dev eth0
+PING 10.69.4.65: 3 packets transmitted, 3 received, 0% packet loss
+```
+
+Seluruh `25` host lolos uji IP, gateway, dan `8.8.8.8` di [evidence/babak1/soal6.txt](evidence/babak1/soal6.txt).
+
+---
+
+### Soal 7: Membangunkan MAGI
+
+Paket `iptables` dan `netcat-traditional` dipasang lewat script idempoten [script/magi-casper.sh](script/magi-casper.sh), [script/magi-balthasar.sh](script/magi-balthasar.sh), dan [script/magi-melchior.sh](script/magi-melchior.sh) (`/root/<nama>.sh`), serta menjalankan listener TCP `nc.traditional`:
+- `Magi-Casper` (`10.69.4.58`): TCP `5000`
+- `Magi-Balthasar` (`10.69.4.59`): TCP `5000` dan `5001`
+- `Magi-Melchior` (`10.69.4.60`): TCP `5000`
+
+Uji kirim `nc -N -w 2` dari `Lilith` (`10.69.4.74`) ke keempat port keluar dengan `exit=0`, dan seluruh pesan tercatat di `/var/log/magi-<port>.log` masing-masing node ([evidence/babak1/soal7.txt](evidence/babak1/soal7.txt)).
+
+---
+
+### Soal 8: Mengenali Kondisi Normal (`Pen-Pen` & `Tokyo3-Core`)
+
+Responder `nc.traditional` dipasang via [script/pen-pen.sh](script/pen-pen.sh) dan [script/tokyo3-core.sh](script/tokyo3-core.sh):
+- `Pen-Pen` (`10.69.3.194:80`) → `Welcome to Pen-Pen`
+- `Tokyo3-Core` (`10.69.4.106:80`) → `Welcome to Tokyo3-Core`
+- `Tokyo3-Core` (`10.69.4.106:8080`) → `syifa imutz`
+
+Uji dari `Lilith` dua kali per port mengembalikan banner yang tepat, dan probe ke port tertutup `22` (`nc -zv -w 3`) langsung gagal dalam `0.058s` (`Connection refused`, bukan menggantung hingga timeout): [evidence/babak1/soal8.txt](evidence/babak1/soal8.txt).

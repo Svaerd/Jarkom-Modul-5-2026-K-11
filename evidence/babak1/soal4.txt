@@ -1,0 +1,56 @@
+=== SOAL 4: DYNAMIC NAT (MASQUERADE) DAN DNS RESOLVER ===
+
+--- NAT counter sebelum ping inter-LAN ---
+Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 MASQUERADE  all  --  *      eth0    10.69.0.0/21         0.0.0.0/0
+
+--- NAT counter sesudah ping Armisael -> Lilith (inter-LAN) ---
+Chain POSTROUTING (policy ACCEPT 1 packets, 84 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 MASQUERADE  all  --  *      eth0    10.69.0.0/21         0.0.0.0/0
+
+--- Armisael: ping -c 3 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=43.9 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=50.6 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=31.2 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 31.161/41.890/50.628/8.071 ms
+
+--- Armisael: ping -c 3 deb.debian.org ---
+PING debian.map.fastlydns.net (151.101.2.132) 56(84) bytes of data.
+64 bytes from 151.101.2.132: icmp_seq=1 ttl=55 time=37.7 ms
+64 bytes from 151.101.2.132: icmp_seq=2 ttl=55 time=30.8 ms
+64 bytes from 151.101.2.132: icmp_seq=3 ttl=55 time=31.8 ms
+
+--- debian.map.fastlydns.net ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 30.791/33.429/37.708/3.052 ms
+
+--- Lilith: ping -c 3 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=110 time=32.7 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=110 time=31.0 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=110 time=32.2 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 30.973/31.979/32.734/0.740 ms
+
+--- Lilith: ping -c 3 deb.debian.org ---
+PING debian.map.fastlydns.net (151.101.130.132) 56(84) bytes of data.
+64 bytes from 151.101.130.132: icmp_seq=1 ttl=54 time=32.9 ms
+64 bytes from 151.101.130.132: icmp_seq=2 ttl=54 time=31.3 ms
+64 bytes from 151.101.130.132: icmp_seq=3 ttl=54 time=32.2 ms
+
+--- debian.map.fastlydns.net ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 31.345/32.143/32.855/0.619 ms
+
+--- NAT counter sesudah ping internet @ Gendo ---
+Chain POSTROUTING (policy ACCEPT 1 packets, 84 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+   12   868 MASQUERADE  all  --  *      eth0    10.69.0.0/21         0.0.0.0/0

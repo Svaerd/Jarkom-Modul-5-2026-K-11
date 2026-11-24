@@ -1,0 +1,40 @@
+=== SOAL 6: IP STATIS PERMANEN DI 25 HOST NON-ROUTER ===
+[OK] Quarters         10.69.0.2/23     gw=10.69.0.1    | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1047ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Comm-Net         10.69.2.2/24     gw=10.69.2.1    | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1055ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Hangar-Crew      10.69.3.2/25     gw=10.69.3.1    | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Sachiel          10.69.3.130/26   gw=10.69.3.129  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1057ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Pen-Pen          10.69.3.194/27   gw=10.69.3.193  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1023ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Medic-Bay        10.69.3.195/27   gw=10.69.3.193  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1007ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Relay-Node       10.69.3.226/27   gw=10.69.3.225  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1059ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Garden-Staff     10.69.4.2/27     gw=10.69.4.1    | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1007ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Dock-Crew        10.69.4.34/28    gw=10.69.4.33   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1006ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Entry-Plug       10.69.4.50/29    gw=10.69.4.49   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1027ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Dummy-Plug       10.69.4.51/29    gw=10.69.4.49   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1020ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Magi-Casper      10.69.4.58/29    gw=10.69.4.57   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1041ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Magi-Balthasar   10.69.4.59/29    gw=10.69.4.57   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Magi-Melchior    10.69.4.60/29    gw=10.69.4.57   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1021ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+
+--- Unit-01 (setelah reload) ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.66/29 fe80::42:a2ff:fe35:1f00/64 
+default via 10.69.4.65 dev eth0 
+10.69.4.64/29 dev eth0 proto kernel scope link src 10.69.4.66 
+PING 10.69.4.65 (10.69.4.65) 56(84) bytes of data.
+64 bytes from 10.69.4.65: icmp_seq=1 ttl=64 time=0.337 ms
+64 bytes from 10.69.4.65: icmp_seq=2 ttl=64 time=0.434 ms
+64 bytes from 10.69.4.65: icmp_seq=3 ttl=64 time=0.467 ms
+
+--- 10.69.4.65 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2039ms
+rtt min/avg/max/mdev = 0.337/0.412/0.467/0.055 ms
+[OK] Unit-01          10.69.4.66/29    gw=10.69.4.65   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1024ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Unit-02          10.69.4.67/29    gw=10.69.4.65   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1037ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Unit-00          10.69.4.68/29    gw=10.69.4.65   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1017ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Lilith           10.69.4.74/29    gw=10.69.4.73   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1040ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Adam             10.69.4.75/29    gw=10.69.4.73   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1006ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Zeruel           10.69.4.82/29    gw=10.69.4.81   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1038ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Armisael         10.69.4.83/29    gw=10.69.4.81   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1028ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1000ms
+[OK] Radar-Array      10.69.4.90/29    gw=10.69.4.89   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1039ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+[OK] Archive-Vault    10.69.4.98/30    gw=10.69.4.97   | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1018ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Spy              10.69.4.102/30   gw=10.69.4.101  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1043ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+[OK] Tokyo3-Core      10.69.4.106/30   gw=10.69.4.105  | gw: 2 packets transmitted, 2 received, 0% packet loss, time 1044ms | inet: 2 packets transmitted, 2 received, 0% packet loss, time 1001ms

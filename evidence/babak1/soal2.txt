@@ -1,0 +1,153 @@
+=== SOAL 2: VERIFIKASI INTERFACE, IP FORWARDING, DAN LINK ROUTER-ROUTER ===
+
+--- Asuka ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.154/30 fe80::42:f8ff:fe57:3d00/64 
+eth1             UNKNOWN        10.69.4.97/30 fe80::42:f8ff:fe57:3d01/64 
+eth2             UNKNOWN        10.69.4.113/30 fe80::42:f8ff:fe57:3d02/64 
+eth3             UNKNOWN        10.69.4.117/30 fe80::42:f8ff:fe57:3d03/64 
+net.ipv4.ip_forward = 1
+
+--- Fuyutsuki ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.170/30 fe80::42:54ff:fe4f:2700/64 
+eth1             UNKNOWN        10.69.4.57/29 fe80::42:54ff:fe4f:2701/64 
+eth2             UNKNOWN        10.69.4.121/30 fe80::42:54ff:fe4f:2702/64 
+eth3             UNKNOWN        10.69.4.125/30 fe80::42:54ff:fe4f:2703/64 
+net.ipv4.ip_forward = 1
+
+--- Gendo ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        192.168.122.82/24 
+eth1             UNKNOWN        10.69.4.105/30 fe80::42:fbff:fec5:8401/64 
+eth2             UNKNOWN        10.69.4.109/30 fe80::42:fbff:fec5:8402/64 
+eth3             UNKNOWN        10.69.4.149/30 fe80::42:fbff:fec5:8403/64 
+eth4             UNKNOWN        10.69.4.153/30 fe80::42:fbff:fec5:8404/64 
+eth5             UNKNOWN        10.69.4.157/30 fe80::42:fbff:fec5:8405/64 
+eth6             UNKNOWN        10.69.4.161/30 fe80::42:fbff:fec5:8406/64 
+eth7             UNKNOWN        10.69.4.165/30 fe80::42:fbff:fec5:8407/64 
+eth8             UNKNOWN        10.69.4.169/30 fe80::42:fbff:fec5:8408/64 
+net.ipv4.ip_forward = 1
+
+--- Hikari ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.150/30 fe80::42:4ff:fea2:cf00/64 
+eth1             UNKNOWN        10.69.2.1/24 fe80::42:4ff:fea2:cf01/64 
+eth2             UNKNOWN        10.69.4.141/30 fe80::42:4ff:fea2:cf02/64 
+net.ipv4.ip_forward = 1
+
+--- Kaji ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.158/30 fe80::42:bbff:fe36:8900/64 
+eth1             UNKNOWN        10.69.4.101/30 fe80::42:bbff:fe36:8901/64 
+net.ipv4.ip_forward = 1
+
+--- Kaworu ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.142/30 fe80::42:94ff:fed9:5300/64 
+eth1             UNKNOWN        10.69.3.225/27 fe80::42:94ff:fed9:5301/64 
+net.ipv4.ip_forward = 1
+
+--- Kensuke ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.114/30 fe80::42:feff:fe56:300/64 
+eth1             UNKNOWN        10.69.3.129/26 fe80::42:feff:fe56:301/64 
+net.ipv4.ip_forward = 1
+
+--- Makoto ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.146/30 fe80::42:82ff:feeb:8900/64 
+eth1             UNKNOWN        10.69.4.89/29 fe80::42:82ff:feeb:8901/64 
+net.ipv4.ip_forward = 1
+
+--- Mari ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.138/30 fe80::42:13ff:fe02:dc00/64 
+eth1             UNKNOWN        10.69.4.33/28 fe80::42:13ff:fe02:dc01/64 
+net.ipv4.ip_forward = 1
+
+--- Maya ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.122/30 fe80::42:34ff:feda:a500/64 
+eth1             UNKNOWN        10.69.3.193/27 fe80::42:34ff:feda:a501/64 
+net.ipv4.ip_forward = 1
+
+--- Misato ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.162/30 fe80::42:ceff:fe66:f600/64 
+eth1             UNKNOWN        10.69.4.65/29 fe80::42:ceff:fe66:f601/64 
+net.ipv4.ip_forward = 1
+
+--- Rei ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.130/30 fe80::42:a1ff:fe5f:8f00/64 
+eth1             UNKNOWN        10.69.0.1/23 fe80::42:a1ff:fe5f:8f01/64 
+net.ipv4.ip_forward = 1
+
+--- Ritsuko ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.118/30 fe80::42:71ff:fe81:c400/64 
+eth1             UNKNOWN        10.69.4.49/29 fe80::42:71ff:fe81:c401/64 
+net.ipv4.ip_forward = 1
+
+--- Shigeru ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.166/30 fe80::42:b2ff:fe50:c900/64 
+eth1             UNKNOWN        10.69.4.81/29 fe80::42:b2ff:fe50:c901/64 
+eth2             UNKNOWN        10.69.4.145/30 fe80::42:b2ff:fe50:c902/64 
+net.ipv4.ip_forward = 1
+
+--- Shinji ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.134/30 fe80::42:f3ff:fe2a:3b00/64 
+eth1             UNKNOWN        10.69.4.1/27 fe80::42:f3ff:fe2a:3b01/64 
+net.ipv4.ip_forward = 1
+
+--- Toji ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.126/30 fe80::42:efff:fe8b:f700/64 
+eth1             UNKNOWN        10.69.4.73/29 fe80::42:efff:fe8b:f701/64 
+net.ipv4.ip_forward = 1
+
+--- Yui ---
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+eth0             UNKNOWN        10.69.4.110/30 fe80::42:c9ff:fe80:fe00/64 
+eth1             UNKNOWN        10.69.3.1/25 fe80::42:c9ff:fe80:fe01/64 
+eth2             UNKNOWN        10.69.4.129/30 fe80::42:c9ff:fe80:fe02/64 
+eth3             UNKNOWN        10.69.4.133/30 fe80::42:c9ff:fe80:fe03/64 
+eth4             UNKNOWN        10.69.4.137/30 fe80::42:c9ff:fe80:fe04/64 
+net.ipv4.ip_forward = 1
+
+--- PING DUA UJUNG 16 LINK ROUTER-ROUTER (32 ARAH) ---
+[OK] K1 Gendo->Yui(10.69.4.110): 2 packets transmitted, 2 received, 0% packet loss, time 1021ms | rtt min/avg/max/mdev = 0.207/0.263/0.319/0.056 ms
+[OK] K1 Yui->Gendo(10.69.4.109): 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | rtt min/avg/max/mdev = 0.216/0.267/0.319/0.051 ms
+[OK] K11 Gendo->Hikari(10.69.4.150): 2 packets transmitted, 2 received, 0% packet loss, time 1025ms | rtt min/avg/max/mdev = 0.236/0.264/0.293/0.028 ms
+[OK] K11 Hikari->Gendo(10.69.4.149): 2 packets transmitted, 2 received, 0% packet loss, time 1030ms | rtt min/avg/max/mdev = 0.243/0.257/0.272/0.014 ms
+[OK] K12 Gendo->Asuka(10.69.4.154): 2 packets transmitted, 2 received, 0% packet loss, time 1033ms | rtt min/avg/max/mdev = 0.230/0.276/0.322/0.046 ms
+[OK] K12 Asuka->Gendo(10.69.4.153): 2 packets transmitted, 2 received, 0% packet loss, time 1023ms | rtt min/avg/max/mdev = 0.171/0.206/0.241/0.035 ms
+[OK] K13 Gendo->Kaji(10.69.4.158): 2 packets transmitted, 2 received, 0% packet loss, time 1029ms | rtt min/avg/max/mdev = 0.257/0.278/0.299/0.021 ms
+[OK] K13 Kaji->Gendo(10.69.4.157): 2 packets transmitted, 2 received, 0% packet loss, time 1029ms | rtt min/avg/max/mdev = 0.221/0.230/0.240/0.009 ms
+[OK] K14 Gendo->Misato(10.69.4.162): 2 packets transmitted, 2 received, 0% packet loss, time 1032ms | rtt min/avg/max/mdev = 0.441/0.599/0.758/0.158 ms
+[OK] K14 Misato->Gendo(10.69.4.161): 2 packets transmitted, 2 received, 0% packet loss, time 1033ms | rtt min/avg/max/mdev = 0.203/0.214/0.225/0.011 ms
+[OK] K15 Gendo->Shigeru(10.69.4.166): 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | rtt min/avg/max/mdev = 0.204/0.244/0.285/0.040 ms
+[OK] K15 Shigeru->Gendo(10.69.4.165): 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | rtt min/avg/max/mdev = 0.211/0.214/0.218/0.003 ms
+[OK] K16 Gendo->Fuyutsuki(10.69.4.170): 2 packets transmitted, 2 received, 0% packet loss, time 1026ms | rtt min/avg/max/mdev = 0.314/0.324/0.335/0.010 ms
+[OK] K16 Fuyutsuki->Gendo(10.69.4.169): 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | rtt min/avg/max/mdev = 0.226/0.279/0.333/0.053 ms
+[OK] K6 Yui->Rei(10.69.4.130): 2 packets transmitted, 2 received, 0% packet loss, time 1029ms | rtt min/avg/max/mdev = 0.278/0.304/0.331/0.026 ms
+[OK] K6 Rei->Yui(10.69.4.129): 2 packets transmitted, 2 received, 0% packet loss, time 1021ms | rtt min/avg/max/mdev = 0.231/0.266/0.301/0.035 ms
+[OK] K7 Yui->Shinji(10.69.4.134): 2 packets transmitted, 2 received, 0% packet loss, time 1027ms | rtt min/avg/max/mdev = 0.227/0.249/0.271/0.022 ms
+[OK] K7 Shinji->Yui(10.69.4.133): 2 packets transmitted, 2 received, 0% packet loss, time 1038ms | rtt min/avg/max/mdev = 0.203/0.230/0.258/0.027 ms
+[OK] K8 Yui->Mari(10.69.4.138): 2 packets transmitted, 2 received, 0% packet loss, time 1031ms | rtt min/avg/max/mdev = 0.257/0.282/0.308/0.025 ms
+[OK] K8 Mari->Yui(10.69.4.137): 2 packets transmitted, 2 received, 0% packet loss, time 1020ms | rtt min/avg/max/mdev = 0.231/0.426/0.622/0.195 ms
+[OK] K9 Hikari->Kaworu(10.69.4.142): 2 packets transmitted, 2 received, 0% packet loss, time 1034ms | rtt min/avg/max/mdev = 0.229/0.323/0.417/0.094 ms
+[OK] K9 Kaworu->Hikari(10.69.4.141): 2 packets transmitted, 2 received, 0% packet loss, time 1022ms | rtt min/avg/max/mdev = 0.188/0.260/0.332/0.072 ms
+[OK] K2 Asuka->Kensuke(10.69.4.114): 2 packets transmitted, 2 received, 0% packet loss, time 1030ms | rtt min/avg/max/mdev = 0.246/0.277/0.309/0.031 ms
+[OK] K2 Kensuke->Asuka(10.69.4.113): 2 packets transmitted, 2 received, 0% packet loss, time 1025ms | rtt min/avg/max/mdev = 0.254/0.255/0.257/0.001 ms
+[OK] K3 Asuka->Ritsuko(10.69.4.118): 2 packets transmitted, 2 received, 0% packet loss, time 1019ms | rtt min/avg/max/mdev = 0.246/0.294/0.343/0.048 ms
+[OK] K3 Ritsuko->Asuka(10.69.4.117): 2 packets transmitted, 2 received, 0% packet loss, time 1022ms | rtt min/avg/max/mdev = 0.212/0.228/0.245/0.016 ms
+[OK] K10 Shigeru->Makoto(10.69.4.146): 2 packets transmitted, 2 received, 0% packet loss, time 1023ms | rtt min/avg/max/mdev = 0.193/0.247/0.302/0.054 ms
+[OK] K10 Makoto->Shigeru(10.69.4.145): 2 packets transmitted, 2 received, 0% packet loss, time 1028ms | rtt min/avg/max/mdev = 0.193/0.225/0.258/0.032 ms
+[OK] K4 Fuyutsuki->Maya(10.69.4.122): 2 packets transmitted, 2 received, 0% packet loss, time 1032ms | rtt min/avg/max/mdev = 0.228/0.271/0.315/0.043 ms
+[OK] K4 Maya->Fuyutsuki(10.69.4.121): 2 packets transmitted, 2 received, 0% packet loss, time 1029ms | rtt min/avg/max/mdev = 0.217/0.240/0.264/0.023 ms
+[OK] K5 Fuyutsuki->Toji(10.69.4.126): 2 packets transmitted, 2 received, 0% packet loss, time 1032ms | rtt min/avg/max/mdev = 0.245/0.277/0.310/0.032 ms
+[OK] K5 Toji->Fuyutsuki(10.69.4.125): 2 packets transmitted, 2 received, 0% packet loss, time 1029ms | rtt min/avg/max/mdev = 0.214/0.246/0.279/0.032 ms

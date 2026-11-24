@@ -1,0 +1,59 @@
+=== SOAL 5: LOCKDOWN GENDO (POLICY DROP INPUT/FORWARD) ===
+
+--- iptables -S @ Gendo ---
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p udp -m udp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -s 10.69.0.0/21 ! -i eth0 -j ACCEPT
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 ! -i eth0 -o eth0 -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 -d 10.69.0.0/21 ! -i eth0 ! -o eth0 -j ACCEPT
+
+--- iptables -t nat -S @ Gendo ---
+-P PREROUTING ACCEPT
+-P INPUT ACCEPT
+-P OUTPUT ACCEPT
+-P POSTROUTING ACCEPT
+-A POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE
+
+--- Armisael -> internet 8.8.8.8 (8.8.8.8) ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=55.0 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=58.5 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=50.0 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 49.994/54.509/58.519/3.498 ms
+
+--- Armisael -> antar-LAN Lilith (10.69.4.74) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=60 time=0.937 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=60 time=2.10 ms
+64 bytes from 10.69.4.74: icmp_seq=3 ttl=60 time=2.83 ms
+
+--- 10.69.4.74 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2036ms
+rtt min/avg/max/mdev = 0.937/1.956/2.830/0.779 ms
+
+--- Armisael -> internal->Gendo eth7 (10.69.4.165) ---
+PING 10.69.4.165 (10.69.4.165) 56(84) bytes of data.
+64 bytes from 10.69.4.165: icmp_seq=1 ttl=63 time=0.580 ms
+64 bytes from 10.69.4.165: icmp_seq=2 ttl=63 time=0.881 ms
+64 bytes from 10.69.4.165: icmp_seq=3 ttl=63 time=0.405 ms
+
+--- 10.69.4.165 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2049ms
+rtt min/avg/max/mdev = 0.405/0.622/0.881/0.196 ms
+
+--- Probe inbound NAT1 -> Gendo eth0 (192.168.122.82) ---
+PING 192.168.122.82 (192.168.122.82) 56(84) bytes of data.
+
+--- 192.168.122.82 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1038ms
+(exit_code=1, koneksi baru dari NAT1 ditolak)
+
+--- Idempotency check (2x bash /root/gendo.sh): identik (10 filter lines, 5 nat lines) ---
