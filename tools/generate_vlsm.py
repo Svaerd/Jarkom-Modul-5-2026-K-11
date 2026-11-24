@@ -12,9 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 IMAGES = DOCS / "images"
-SCRATCH_WORKBOOK = Path(
-    "/home/host2/.gemini/antigravity/brain/61d981ad-7f27-423f-9df1-e045ece5fba4/scratch/vlsm-workbook.json"
-)
+SCRATCH_WORKBOOK = Path("/tmp/vlsm-workbook.json")
 
 PARENT_CIDR = "10.69.0.0/21"
 DEBINET_IMG = "ardhptr21/debinet:latest"

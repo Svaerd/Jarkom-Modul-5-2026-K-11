@@ -540,4 +540,4 @@ ping -c 2 -W 1 10.69.4.58
 
 ---
 
-**Handoff ke Partner:** proyek diekspor ke [K-11-MODUL-5.gns3project](K-11-MODUL-5.gns3project) dengan panduan lanjutan untuk Soal 13–20 di [HANDOFF.md](HANDOFF.md).
+**Export Project:** proyek GNS3 diekspor ke [K-11-MODUL-5.gns3project](K-11-MODUL-5.gns3project).
