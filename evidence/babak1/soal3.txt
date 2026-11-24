@@ -1,0 +1,112 @@
+=== SOAL 3: ROUTING STATIS, RINGKASAN CIDR, DAN PING LINTAS CABANG ===
+
+--- ip route @ Gendo ---
+default via 192.168.122.1 dev eth0 metric 232 
+10.69.0.0/23 via 10.69.4.110 dev eth2 
+10.69.2.0/24 via 10.69.4.150 dev eth3 
+10.69.3.0/25 via 10.69.4.110 dev eth2 
+10.69.3.128/26 via 10.69.4.154 dev eth4 
+10.69.3.192/27 via 10.69.4.170 dev eth8 
+10.69.3.224/27 via 10.69.4.150 dev eth3 
+10.69.4.0/27 via 10.69.4.110 dev eth2 
+10.69.4.32/28 via 10.69.4.110 dev eth2 
+10.69.4.48/29 via 10.69.4.154 dev eth4 
+10.69.4.56/29 via 10.69.4.170 dev eth8 
+10.69.4.64/29 via 10.69.4.162 dev eth6 
+10.69.4.72/29 via 10.69.4.170 dev eth8 
+10.69.4.80/28 via 10.69.4.166 dev eth7 
+10.69.4.96/30 via 10.69.4.154 dev eth4 
+10.69.4.100/30 via 10.69.4.158 dev eth5 
+10.69.4.104/30 dev eth1 proto kernel scope link src 10.69.4.105 
+10.69.4.108/30 dev eth2 proto kernel scope link src 10.69.4.109 
+10.69.4.112/29 via 10.69.4.154 dev eth4 
+10.69.4.120/29 via 10.69.4.170 dev eth8 
+10.69.4.128/29 via 10.69.4.110 dev eth2 
+10.69.4.136/30 via 10.69.4.110 dev eth2 
+10.69.4.140/30 via 10.69.4.150 dev eth3 
+10.69.4.144/30 via 10.69.4.166 dev eth7 
+10.69.4.148/30 dev eth3 proto kernel scope link src 10.69.4.149 
+10.69.4.152/30 dev eth4 proto kernel scope link src 10.69.4.153 
+10.69.4.156/30 dev eth5 proto kernel scope link src 10.69.4.157 
+10.69.4.160/30 dev eth6 proto kernel scope link src 10.69.4.161 
+10.69.4.164/30 dev eth7 proto kernel scope link src 10.69.4.165 
+10.69.4.168/30 dev eth8 proto kernel scope link src 10.69.4.169 
+192.168.122.0/24 dev eth0 proto kernel scope link src 192.168.122.82
+
+--- ip route @ Yui ---
+default via 10.69.4.109 dev eth0 
+10.69.0.0/23 via 10.69.4.130 dev eth2 
+10.69.3.0/25 dev eth1 proto kernel scope link src 10.69.3.1 
+10.69.4.0/27 via 10.69.4.134 dev eth3 
+10.69.4.32/28 via 10.69.4.138 dev eth4 
+10.69.4.108/30 dev eth0 proto kernel scope link src 10.69.4.110 
+10.69.4.128/30 dev eth2 proto kernel scope link src 10.69.4.129 
+10.69.4.132/30 dev eth3 proto kernel scope link src 10.69.4.133 
+10.69.4.136/30 dev eth4 proto kernel scope link src 10.69.4.137
+
+--- ip route @ Hikari ---
+default via 10.69.4.149 dev eth0 
+10.69.2.0/24 dev eth1 proto kernel scope link src 10.69.2.1 
+10.69.3.224/27 via 10.69.4.142 dev eth2 
+10.69.4.140/30 dev eth2 proto kernel scope link src 10.69.4.141 
+10.69.4.148/30 dev eth0 proto kernel scope link src 10.69.4.150
+
+--- ip route @ Asuka ---
+default via 10.69.4.153 dev eth0 
+10.69.3.128/26 via 10.69.4.114 dev eth2 
+10.69.4.48/29 via 10.69.4.118 dev eth3 
+10.69.4.96/30 dev eth1 proto kernel scope link src 10.69.4.97 
+10.69.4.112/30 dev eth2 proto kernel scope link src 10.69.4.113 
+10.69.4.116/30 dev eth3 proto kernel scope link src 10.69.4.117 
+10.69.4.152/30 dev eth0 proto kernel scope link src 10.69.4.154
+
+--- ip route @ Shigeru ---
+default via 10.69.4.165 dev eth0 
+10.69.4.80/29 dev eth1 proto kernel scope link src 10.69.4.81 
+10.69.4.88/29 via 10.69.4.146 dev eth2 
+10.69.4.144/30 dev eth2 proto kernel scope link src 10.69.4.145 
+10.69.4.164/30 dev eth0 proto kernel scope link src 10.69.4.166
+
+--- ip route @ Fuyutsuki ---
+default via 10.69.4.169 dev eth0 
+10.69.3.192/27 via 10.69.4.122 dev eth2 
+10.69.4.56/29 dev eth1 proto kernel scope link src 10.69.4.57 
+10.69.4.72/29 via 10.69.4.126 dev eth3 
+10.69.4.120/30 dev eth2 proto kernel scope link src 10.69.4.121 
+10.69.4.124/30 dev eth3 proto kernel scope link src 10.69.4.125 
+10.69.4.168/30 dev eth0 proto kernel scope link src 10.69.4.170
+
+--- ip route @ Ritsuko ---
+default via 10.69.4.117 dev eth0 
+10.69.4.48/29 dev eth1 proto kernel scope link src 10.69.4.49 
+10.69.4.116/30 dev eth0 proto kernel scope link src 10.69.4.118
+
+--- ping Armisael -> Lilith (10.69.4.74) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=60 time=1.12 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=60 time=0.857 ms
+64 bytes from 10.69.4.74: icmp_seq=3 ttl=60 time=0.870 ms
+
+--- 10.69.4.74 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2010ms
+rtt min/avg/max/mdev = 0.857/0.948/1.118/0.120 ms
+
+--- ping Armisael -> Sachiel (10.69.3.130) ---
+PING 10.69.3.130 (10.69.3.130) 56(84) bytes of data.
+64 bytes from 10.69.3.130: icmp_seq=1 ttl=60 time=1.07 ms
+64 bytes from 10.69.3.130: icmp_seq=2 ttl=60 time=1.88 ms
+64 bytes from 10.69.3.130: icmp_seq=3 ttl=60 time=0.976 ms
+
+--- 10.69.3.130 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 0.976/1.306/1.876/0.404 ms
+
+--- ping Armisael -> Comm-Net (10.69.2.2) ---
+PING 10.69.2.2 (10.69.2.2) 56(84) bytes of data.
+64 bytes from 10.69.2.2: icmp_seq=1 ttl=61 time=2.29 ms
+64 bytes from 10.69.2.2: icmp_seq=2 ttl=61 time=0.904 ms
+64 bytes from 10.69.2.2: icmp_seq=3 ttl=61 time=0.967 ms
+
+--- 10.69.2.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2047ms
+rtt min/avg/max/mdev = 0.904/1.387/2.292/0.639 ms

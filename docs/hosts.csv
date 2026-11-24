@@ -1,0 +1,26 @@
+host,subnet_id,switch,router,vlsm_hosts,ip,prefix,cidr,gateway,image,category,ports
+Quarters,L1,Switch-Quarters,Rei,500,10.69.0.2,23,10.69.0.2/23,10.69.0.1,ardhptr21/alpinet:latest,Lainnya,-
+Comm-Net,L2,Switch-Comm,Hikari,200,10.69.2.2,24,10.69.2.2/24,10.69.2.1,ardhptr21/alpinet:latest,Lainnya,-
+Hangar-Crew,L3,Switch-Hangar,Yui,100,10.69.3.2,25,10.69.3.2/25,10.69.3.1,ardhptr21/alpinet:latest,Lainnya,-
+Sachiel,L4,Switch-Bunker,Kensuke,55,10.69.3.130,26,10.69.3.130/26,10.69.3.129,ardhptr21/alpinet:latest,Pilot,-
+Pen-Pen,L5,Switch-Medic,Maya,1,10.69.3.194,27,10.69.3.194/27,10.69.3.193,ardhptr21/debinet:latest,Lainnya,TCP 80
+Medic-Bay,L5,Switch-Medic,Maya,25,10.69.3.195,27,10.69.3.195/27,10.69.3.193,ardhptr21/alpinet:latest,Lainnya,-
+Relay-Node,L6,Switch-Relay,Kaworu,25,10.69.3.226,27,10.69.3.226/27,10.69.3.225,ardhptr21/alpinet:latest,Lainnya,-
+Garden-Staff,L7,Switch-Garden,Shinji,14,10.69.4.2,27,10.69.4.2/27,10.69.4.1,ardhptr21/alpinet:latest,Lainnya,-
+Dock-Crew,L8,Switch-Dock,Mari,12,10.69.4.34,28,10.69.4.34/28,10.69.4.33,ardhptr21/alpinet:latest,Lainnya,-
+Entry-Plug,L9,Switch-Lab,Ritsuko,3,10.69.4.50,29,10.69.4.50/29,10.69.4.49,ardhptr21/alpinet:latest,Terduga Dummy System,-
+Dummy-Plug,L9,Switch-Lab,Ritsuko,2,10.69.4.51,29,10.69.4.51/29,10.69.4.49,ardhptr21/alpinet:latest,Terduga Dummy System,-
+Magi-Casper,L10,Switch-Terminal,Fuyutsuki,1,10.69.4.58,29,10.69.4.58/29,10.69.4.57,ardhptr21/debinet:latest,Perangkat MAGI,TCP 5000
+Magi-Balthasar,L10,Switch-Terminal,Fuyutsuki,1,10.69.4.59,29,10.69.4.59/29,10.69.4.57,ardhptr21/debinet:latest,Perangkat MAGI,"TCP 5000, TCP 5001"
+Magi-Melchior,L10,Switch-Terminal,Fuyutsuki,1,10.69.4.60,29,10.69.4.60/29,10.69.4.57,ardhptr21/debinet:latest,Perangkat MAGI,TCP 5000
+Unit-01,L11,Switch-Cage,Misato,1,10.69.4.66,29,10.69.4.66/29,10.69.4.65,ardhptr21/alpinet:latest,Pilot,-
+Unit-02,L11,Switch-Cage,Misato,1,10.69.4.67,29,10.69.4.67/29,10.69.4.65,ardhptr21/alpinet:latest,Pilot,-
+Unit-00,L11,Switch-Cage,Misato,1,10.69.4.68,29,10.69.4.68/29,10.69.4.65,ardhptr21/alpinet:latest,Pilot,-
+Lilith,L12,Switch-Dogma,Toji,1,10.69.4.74,29,10.69.4.74/29,10.69.4.73,ardhptr21/alpinet:latest,Staf Geofront,-
+Adam,L12,Switch-Dogma,Toji,1,10.69.4.75,29,10.69.4.75/29,10.69.4.73,ardhptr21/alpinet:latest,Staf Geofront,-
+Zeruel,L13,Switch-Monolith,Shigeru,1,10.69.4.82,29,10.69.4.82/29,10.69.4.81,ardhptr21/debinet:latest,Lainnya (Zona Sensitif),-
+Armisael,L13,Switch-Monolith,Shigeru,1,10.69.4.83,29,10.69.4.83/29,10.69.4.81,ardhptr21/alpinet:latest,Lainnya (Zona Sensitif),-
+Radar-Array,L14,Switch-Radar,Makoto,4,10.69.4.90,29,10.69.4.90/29,10.69.4.89,ardhptr21/alpinet:latest,Lainnya (Zona Sensitif),-
+Archive-Vault,L15,Switch-Archive,Asuka,1,10.69.4.98,30,10.69.4.98/30,10.69.4.97,ardhptr21/alpinet:latest,Lainnya,-
+Spy,L16,Switch-Intel,Kaji,1,10.69.4.102,30,10.69.4.102/30,10.69.4.101,ardhptr21/alpinet:latest,Terduga Dummy System,-
+Tokyo3-Core,L17,Switch-Cmd,Gendo,1,10.69.4.106,30,10.69.4.106/30,10.69.4.105,ardhptr21/debinet:latest,Lainnya,"TCP 80, TCP 8080"

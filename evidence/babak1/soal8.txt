@@ -1,0 +1,24 @@
+=== SOAL 8: LAYANAN NORMAL PEN-PEN DAN TOKYO3-CORE ===
+
+--- Status @ Pen-Pen ---
+Pen-Pen
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                 
+LISTEN 0      1            0.0.0.0:80        0.0.0.0:*    users:(("nc.traditional",pid=565,fd=3))
+
+--- Status @ Tokyo3-Core ---
+Tokyo3-Core
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                 
+LISTEN 0      1            0.0.0.0:80        0.0.0.0:*    users:(("nc.traditional",pid=565,fd=3))
+LISTEN 0      1            0.0.0.0:8080      0.0.0.0:*    users:(("nc.traditional",pid=568,fd=3))
+
+--- Uji nc dari Lilith (2x per port untuk bukti persistent loop) ---
+[OK] run#1 Lilith -> Pen-Pen (10.69.3.194:80) [rc=0]: Welcome to Pen-Pen
+[OK] run#2 Lilith -> Pen-Pen (10.69.3.194:80) [rc=0]: Welcome to Pen-Pen
+[OK] run#1 Lilith -> Tokyo3-Core (10.69.4.106:80) [rc=0]: Welcome to Tokyo3-Core
+[OK] run#2 Lilith -> Tokyo3-Core (10.69.4.106:80) [rc=0]: Welcome to Tokyo3-Core
+[OK] run#1 Lilith -> Tokyo3-Core (10.69.4.106:8080) [rc=0]: syifa imutz
+[OK] run#2 Lilith -> Tokyo3-Core (10.69.4.106:8080) [rc=0]: syifa imutz
+
+--- Uji port tertutup (port 22) harus langsung gagal, bukan hang ---
+[OK] Pen-Pen (10.69.3.194:22): exit=1, durasi=0.058s, msg=nc: connect to 10.69.3.194 port 22 (tcp) failed: Connection refused
+[OK] Tokyo3-Core (10.69.4.106:22): exit=1, durasi=0.058s, msg=nc: connect to 10.69.4.106 port 22 (tcp) failed: Connection refused
