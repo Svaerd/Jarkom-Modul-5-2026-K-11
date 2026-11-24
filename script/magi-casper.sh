@@ -20,3 +20,18 @@ stop_loop "/run/magi-casper-5000.pid" "5000"
 ( while true; do nc.traditional -n -l -p 5000 >> /var/log/magi-5000.log 2>&1; done ) </dev/null >/dev/null 2>&1 &
 echo $! > "/run/magi-casper-5000.pid"
 sleep 0.3
+
+# Soal 11 & 12: Mode hantu + hardening Casper (policy INPUT tetap DROP)
+add_rule() {
+  local chain="$1"; shift
+  iptables -C "$chain" "$@" 2>/dev/null || iptables -A "$chain" "$@"
+}
+
+add_rule INPUT -i lo -j ACCEPT
+add_rule INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+add_rule INPUT -p tcp --dport 5000 -j ACCEPT
+add_rule INPUT -p icmp --icmp-type echo-request -j DROP
+
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
