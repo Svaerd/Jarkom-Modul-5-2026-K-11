@@ -161,6 +161,18 @@ net.ipv4.ip_forward = 1
 
 Seluruh `32` ping ujung-ke-ujung link `K1`–`K16` tercatat `0% packet loss`.
 
+```sh
+# dijalankan di Gendo (dan router lain)
+ip -br a
+sysctl net.ipv4.ip_forward
+
+# contoh uji dua ujung link K15 (Gendo <-> Shigeru)
+# dijalankan di Gendo
+ping -c 2 10.69.4.166
+# dijalankan di Shigeru
+ping -c 2 10.69.4.165
+```
+
 ![](./Attachments/image-1.webp)
 ![](./Attachments/image-2.webp)
 
@@ -174,6 +186,16 @@ Uji sementara dari `Armisael` (`10.69.4.83`) ke tiga cabang berbeda berhasil (`0
 - `ping -c 3 10.69.4.74` (`Lilith`): `3 transmitted, 3 received, 0% packet loss`
 - `ping -c 3 10.69.3.130` (`Sachiel`): `3 transmitted, 3 received, 0% packet loss`
 - `ping -c 3 10.69.2.2` (`Comm-Net`): `3 transmitted, 3 received, 0% packet loss`
+
+```sh
+# dijalankan di Gendo
+ip route
+
+# dijalankan di Armisael (ping ke Lilith, Sachiel, Comm-Net)
+ping -c 3 10.69.4.74
+ping -c 3 10.69.3.130
+ping -c 3 10.69.2.2
+```
 
 ![](./Attachments/image-3.webp)
 ![](./Attachments/image-4.webp)
@@ -192,6 +214,19 @@ iptables -t nat -C POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE 2>/dev/null
 Bukti di [evidence/babak1/soal4.txt](evidence/babak1/soal4.txt):
 - Ping antar-LAN `Armisael` → `Lilith` (`10.69.4.74`) **tidak** menaikkan counter `MASQUERADE` (`0 packets`).
 - `Armisael` dan `Lilith` berhasil `ping -c 3 8.8.8.8` dan `ping -c 3 deb.debian.org` (`0% packet loss`), dan counter `MASQUERADE` di `Gendo` naik menjadi `12 pkts / 868 bytes`.
+
+```sh
+# dijalankan di Armisael
+ping -c 3 8.8.8.8
+ping -c 3 deb.debian.org
+
+# dijalankan di Lilith
+ping -c 3 8.8.8.8
+ping -c 3 deb.debian.org
+
+# dijalankan di Gendo (cek counter rule NAT)
+iptables -t nat -L POSTROUTING -v -n
+```
 
 ![](./Attachments/image-6.webp)
 ![](./Attachments/image-5.webp)
@@ -220,6 +255,21 @@ Bukti di [evidence/babak1/soal5.txt](evidence/babak1/soal5.txt):
 - Menjalankan `bash /root/gendo.sh` dua kali berturut-turut menghasilkan rule identik (`10` baris `filter`, `5` baris `nat`).
 - `Armisael` tetap berhasil ping ke `8.8.8.8`, `Lilith` (`10.69.4.74`), dan `Gendo` (`10.69.4.165`), sementara ping baru dari sisi `NAT1` (`virbr0` → `192.168.122.82`) ditolak (`100% packet loss`).
 
+```sh
+# dijalankan di Gendo
+iptables -S
+iptables -t nat -S
+
+# cek idempoten 2x eksekusi
+bash /root/gendo.sh && iptables -S | wc -l && iptables -t nat -S | wc -l
+bash /root/gendo.sh && iptables -S | wc -l && iptables -t nat -S | wc -l
+
+# dijalankan di Armisael
+ping -c 3 8.8.8.8
+ping -c 2 10.69.4.74
+ping -c 2 10.69.4.165
+```
+
 ![](./Attachments/image-7.webp)
 
 ---
@@ -238,6 +288,15 @@ PING 10.69.4.65: 3 packets transmitted, 3 received, 0% packet loss
 
 Seluruh `25` host lolos uji IP, gateway, dan `8.8.8.8` di [evidence/babak1/soal6.txt](evidence/babak1/soal6.txt).
 
+```sh
+# dijalankan di Unit-01 (setelah stop + start)
+ip -br a
+ip route
+cat /etc/network/interfaces
+ping -c 3 10.69.4.65
+ping -c 2 8.8.8.8
+```
+
 ![](./Attachments/image-8.webp)
 
 ---
@@ -250,6 +309,23 @@ Paket `iptables` dan `netcat-traditional` dipasang lewat script idempoten [scrip
 - `Magi-Melchior` (`10.69.4.60`): TCP `5000`
 
 Uji kirim `nc -N -w 2` dari `Lilith` (`10.69.4.74`) ke keempat port keluar dengan `exit=0`, dan seluruh pesan tercatat di `/var/log/magi-<port>.log` masing-masing node ([evidence/babak1/soal7.txt](evidence/babak1/soal7.txt)).
+
+```sh
+# dijalankan di Lilith
+echo "tes casper" | nc -N -w 2 10.69.4.58 5000
+echo "tes balthasar 5000" | nc -N -w 2 10.69.4.59 5000
+echo "tes balthasar 5001" | nc -N -w 2 10.69.4.59 5001
+echo "tes melchior" | nc -N -w 2 10.69.4.60 5000
+
+# dijalankan di Magi-Casper
+ss -tlnp && cat /var/log/magi-5000.log
+
+# dijalankan di Magi-Balthasar
+ss -tlnp && cat /var/log/magi-5000.log && echo "---" && cat /var/log/magi-5001.log
+
+# dijalankan di Magi-Melchior
+ss -tlnp && cat /var/log/magi-5000.log
+```
 
 ![](./Attachments/image-9.webp)
 ![](./Attachments/image-10.webp)
@@ -266,6 +342,15 @@ Responder `nc.traditional` dipasang via [script/pen-pen.sh](script/pen-pen.sh) d
 - `Tokyo3-Core` (`10.69.4.106:8080`) → `syifa imutz`
 
 Uji dari `Lilith` dua kali per port mengembalikan banner yang tepat, dan probe ke port tertutup `22` (`nc -zv -w 3`) langsung gagal dalam `0.058s` (`Connection refused`, bukan menggantung hingga timeout): [evidence/babak1/soal8.txt](evidence/babak1/soal8.txt).
+
+```sh
+# dijalankan di Lilith
+nc -w 2 10.69.3.194 80 </dev/null
+nc -w 2 10.69.4.106 80 </dev/null
+nc -w 2 10.69.4.106 8080 </dev/null
+time nc -zv -w 3 10.69.3.194 22
+time nc -zv -w 3 10.69.4.106 22
+```
 
 ![](./Attachments/image-13.webp)
 
@@ -300,7 +385,22 @@ bash /root/shigeru.sh   # mengembalikan ip_forward=1, default via 10.69.4.165 de
 - `Lilith` → `Armisael` (`10.69.4.83`): `3 transmitted, 3 received, 0% packet loss`.
 - `Armisael` → `Lilith` (`10.69.4.74`) dan `8.8.8.8`: `0% packet loss`.
 
-<!-- TODO: screenshot hasil perbaikan Soal 9 di Shigeru dan ping Lilith -> Armisael -->
+```sh
+# dijalankan di Shigeru
+ip route show table all
+ip rule list
+sysctl net.ipv4.ip_forward
+
+# dijalankan di Lilith
+ping -c 3 10.69.4.83
+
+# dijalankan di Armisael (dan Radar-Array)
+ping -c 3 10.69.4.74
+ping -c 3 8.8.8.8
+```
+
+![](./Attachments/image-14.webp)
+![](./Attachments/image-16.webp)
 
 ---
 
@@ -336,7 +436,22 @@ bash /root/gendo.sh
 **Bukti verifikasi ([evidence/babak2/soal10.txt](evidence/babak2/soal10.txt)):**
 - `Unit-01`, `Unit-02`, `Unit-00`, `Spy`, dan `Armisael` seluruhnya berhasil `ping -c 3 8.8.8.8` (`0% packet loss`).
 
-<!-- TODO: screenshot hasil perbaikan Soal 10 di Misato/Gendo dan ping Unit-01 -> 8.8.8.8 -->
+```sh
+# dijalankan di Misato
+iptables -t nat -S
+
+# dijalankan di Gendo
+iptables -t nat -S
+iptables -S
+
+# dijalankan di Unit-01 (dan Unit-02 / Unit-00 / Spy)
+ping -c 3 8.8.8.8
+ping -c 2 10.69.4.74
+```
+
+![](./Attachments/image-17.webp)
+![](./Attachments/image-18.webp)
+![](./Attachments/image-19.webp)
 
 ---
 
@@ -355,7 +470,24 @@ iptables -C INPUT -p icmp --icmp-type echo-request -j DROP 2>/dev/null || \
 - `Magi-Casper` → `ping 10.69.4.59` (`Magi-Balthasar`) & `10.69.4.74` (`Lilith`): keduanya `3 received, 0% packet loss`.
 - `Lilith` → `Magi-Casper:5000` (`nc -N -w 2`): `exit=0`, pesan tercatat di `/var/log/magi-5000.log`.
 
-<!-- TODO: screenshot mode hantu Casper Soal 11 -->
+```sh
+# dijalankan di Magi-Balthasar (harus gagal / 100% loss)
+ping -c 2 -W 1 10.69.4.58
+
+# dijalankan di Lilith (harus gagal / 100% loss)
+ping -c 2 -W 1 10.69.4.58
+
+# dijalankan di Magi-Casper (harus berhasil / 0% loss)
+ping -c 3 10.69.4.59
+ping -c 3 10.69.4.74
+
+# dijalankan di Lilith (TCP 5000 tetap hidup)
+echo "uji soal 11" | nc -N -w 2 10.69.4.58 5000
+```
+
+![](./Attachments/image-20.webp)
+![](./Attachments/image-21.webp)
+![](./Attachments/image-22.webp)
 
 ---
 
@@ -386,7 +518,25 @@ Menghapus dua rule sabotase (`-D INPUT -p icmp -j DROP` dan `-D OUTPUT -p udp --
 - `Magi-Casper` → `ping 8.8.8.8`, `Magi-Balthasar`, `Lilith`: seluruhnya `0% packet loss`.
 - Ping masuk dari `Magi-Balthasar` & `Lilith` ke `Magi-Casper` serta koneksi ke port `22` dari `Unit-00` tetap ditolak (`policy INPUT DROP`).
 
-<!-- TODO: screenshot iptables -S, nc Unit-00 -> Casper:5000, dan apt-get update @ Magi-Casper -->
+```sh
+# dijalankan di Magi-Casper
+iptables -S
+apt-get update
+ping -c 3 8.8.8.8
+cat /var/log/magi-5000.log
+
+# dijalankan di Unit-00 (5000 berhasil, 22 ditolak/timeout)
+echo "uji soal 12" | nc -N -w 2 10.69.4.58 5000
+nc -zv -w 2 10.69.4.58 22
+
+# dijalankan di Magi-Balthasar / Lilith (ping masuk tetap gagal)
+ping -c 2 -W 1 10.69.4.58
+```
+
+![](./Attachments/image-23.webp)
+![](./Attachments/image-24.webp)
+![](./Attachments/image-25.webp)
+![](./Attachments/image-26.webp)
 
 ---
 
