@@ -20,6 +20,9 @@ Laporan Praktikum Modul 5 — Komunikasi Data & Jaringan Komputer 2026: **Operat
 
 ![Topologi Operation Geofront](docs/images/topo_5.png)
 
+<!-- TODO: simpan screenshot GNS3 di docs/images/topology-gns3.png -->
+![Topologi GNS3 K-11-MODUL-5](docs/images/topology-gns3.png)
+
 Topologi Geofront terdiri atas **60 node** (`17` router, `17` Ethernet switch, `25` container host, dan `1` `NAT1`) dengan **59 link** (`docs/cables.csv`). Pembagian image Docker:
 
 - `ardhptr21/debinet:latest` (**23 node**): seluruh `17` router + `Magi-Casper`, `Magi-Balthasar`, `Magi-Melchior`, `Pen-Pen`, `Tokyo3-Core`, dan `Zeruel`.
@@ -159,6 +162,10 @@ net.ipv4.ip_forward = 1
 
 Seluruh `32` ping ujung-ke-ujung link `K1`–`K16` tercatat `0% packet loss`.
 
+<!-- TODO: simpan screenshot di docs/images/soal2-gendo.png dan docs/images/soal2-shigeru.png -->
+![Verifikasi interface dan forwarding Gendo](docs/images/soal2-gendo.png)
+![Verifikasi interface dan link Shigeru](docs/images/soal2-shigeru.png)
+
 ---
 
 ### Soal 3: Pulau-Pulau yang Terpisah (Routing Statis & Ringkasan CIDR)
@@ -169,6 +176,10 @@ Uji sementara dari `Armisael` (`10.69.4.83`) ke tiga cabang berbeda berhasil (`0
 - `ping -c 3 10.69.4.74` (`Lilith`): `3 transmitted, 3 received, 0% packet loss`
 - `ping -c 3 10.69.3.130` (`Sachiel`): `3 transmitted, 3 received, 0% packet loss`
 - `ping -c 3 10.69.2.2` (`Comm-Net`): `3 transmitted, 3 received, 0% packet loss`
+
+<!-- TODO: simpan screenshot di docs/images/soal3-gendo-route.png dan docs/images/soal3-armisael-ping.png -->
+![Tabel routing Gendo dengan ringkasan CIDR](docs/images/soal3-gendo-route.png)
+![Ping Armisael ke Lilith, Sachiel, dan Comm-Net](docs/images/soal3-armisael-ping.png)
 
 ---
 
@@ -184,6 +195,10 @@ iptables -t nat -C POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE 2>/dev/null
 Bukti di [evidence/babak1/soal4.txt](evidence/babak1/soal4.txt):
 - Ping antar-LAN `Armisael` → `Lilith` (`10.69.4.74`) **tidak** menaikkan counter `MASQUERADE` (`0 packets`).
 - `Armisael` dan `Lilith` berhasil `ping -c 3 8.8.8.8` dan `ping -c 3 deb.debian.org` (`0% packet loss`), dan counter `MASQUERADE` di `Gendo` naik menjadi `12 pkts / 868 bytes`.
+
+<!-- TODO: simpan screenshot di docs/images/soal4-armisael-lilith.png dan docs/images/soal4-gendo-nat.png -->
+![Ping internet dan DNS dari Armisael dan Lilith](docs/images/soal4-armisael-lilith.png)
+![Counter rule NAT MASQUERADE di Gendo](docs/images/soal4-gendo-nat.png)
 
 ---
 
@@ -209,6 +224,9 @@ Bukti di [evidence/babak1/soal5.txt](evidence/babak1/soal5.txt):
 - Menjalankan `bash /root/gendo.sh` dua kali berturut-turut menghasilkan rule identik (`10` baris `filter`, `5` baris `nat`).
 - `Armisael` tetap berhasil ping ke `8.8.8.8`, `Lilith` (`10.69.4.74`), dan `Gendo` (`10.69.4.165`), sementara ping baru dari sisi `NAT1` (`virbr0` → `192.168.122.82`) ditolak (`100% packet loss`).
 
+<!-- TODO: simpan screenshot di docs/images/soal5-gendo-iptables.png -->
+![Rule iptables -S pada Gendo](docs/images/soal5-gendo-iptables.png)
+
 ---
 
 ### Soal 6: Alamat Para Pilot (IP Statis Permanen 25 Host)
@@ -225,6 +243,9 @@ PING 10.69.4.65: 3 packets transmitted, 3 received, 0% packet loss
 
 Seluruh `25` host lolos uji IP, gateway, dan `8.8.8.8` di [evidence/babak1/soal6.txt](evidence/babak1/soal6.txt).
 
+<!-- TODO: simpan screenshot di docs/images/soal6-unit01.png -->
+![IP permanen dan ping gateway pada Unit-01](docs/images/soal6-unit01.png)
+
 ---
 
 ### Soal 7: Membangunkan MAGI
@@ -236,6 +257,10 @@ Paket `iptables` dan `netcat-traditional` dipasang lewat script idempoten [scrip
 
 Uji kirim `nc -N -w 2` dari `Lilith` (`10.69.4.74`) ke keempat port keluar dengan `exit=0`, dan seluruh pesan tercatat di `/var/log/magi-<port>.log` masing-masing node ([evidence/babak1/soal7.txt](evidence/babak1/soal7.txt)).
 
+<!-- TODO: simpan screenshot di docs/images/soal7-lilith-send.png dan docs/images/soal7-magi-logs.png -->
+![Pengiriman pesan nc dari Lilith ke MAGI](docs/images/soal7-lilith-send.png)
+![Log pesan yang diterima Casper, Balthasar, dan Melchior](docs/images/soal7-magi-logs.png)
+
 ---
 
 ### Soal 8: Mengenali Kondisi Normal (`Pen-Pen` & `Tokyo3-Core`)
@@ -246,3 +271,6 @@ Responder `nc.traditional` dipasang via [script/pen-pen.sh](script/pen-pen.sh) d
 - `Tokyo3-Core` (`10.69.4.106:8080`) → `syifa imutz`
 
 Uji dari `Lilith` dua kali per port mengembalikan banner yang tepat, dan probe ke port tertutup `22` (`nc -zv -w 3`) langsung gagal dalam `0.058s` (`Connection refused`, bukan menggantung hingga timeout): [evidence/babak1/soal8.txt](evidence/babak1/soal8.txt).
+
+<!-- TODO: simpan screenshot di docs/images/soal8-lilith-nc.png -->
+![Uji nc Pen-Pen, Tokyo3-Core, dan penolakan port 22 dari Lilith](docs/images/soal8-lilith-nc.png)
