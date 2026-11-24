@@ -13,7 +13,7 @@ Laporan Praktikum Modul 5 — Komunikasi Data & Jaringan Komputer 2026: **Operat
 
 - [x] **Tahap 1 — Soal 1:** Perhitungan VLSM (`10.69.0.0/21`), pohon IP, spreadsheet, serta pemetaan interface & routing statis.
 - [x] **Tahap 2 — Babak 1 (Soal 2–8):** Pembangunan topologi GNS3, routing statis, NAT + firewall `Gendo`, IP permanen host, serta layanan MAGI, `Pen-Pen`, dan `Tokyo3-Core`.
-- [ ] **Tahap 3 — Babak 2 (Soal 9–12):** Investigasi & perbaikan sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`) dan mode hantu `Magi-Casper`.
+- [x] **Tahap 3 — Babak 2 (Soal 9–12):** Investigasi & perbaikan sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`) dan mode hantu `Magi-Casper`.
 - [ ] **Babak 3 & Final (Soal 13–20):** Pengamanan `Magi-Balthasar`, `Pen-Pen`, `Tokyo3-Core`, pengalihan di `Fuyutsuki`, gerbang zona sensitif `Shigeru`, isolasi `Armisael`, dan uji pemulihan (dikerjakan partner).
 
 ## Topologi
@@ -268,3 +268,126 @@ Responder `nc.traditional` dipasang via [script/pen-pen.sh](script/pen-pen.sh) d
 Uji dari `Lilith` dua kali per port mengembalikan banner yang tepat, dan probe ke port tertutup `22` (`nc -zv -w 3`) langsung gagal dalam `0.058s` (`Connection refused`, bukan menggantung hingga timeout): [evidence/babak1/soal8.txt](evidence/babak1/soal8.txt).
 
 ![](./Attachments/image-13.webp)
+
+---
+
+## Babak 2: Sabotase dan Hantu MAGI
+
+Seluruh script sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`) diunduh langsung dan dijalankan di dalam container target tanpa membaca isi scriptnya; diagnosa dilakukan murni dari selisih (*diff*) kondisi kernel dan gejala jaringan ([evidence/babak2/](evidence/babak2/)).
+
+### Soal 9: Jalur Belakang Diutak-atik (`break_routing.sh` di `Shigeru`)
+
+**Penyebab yang ditemukan:**
+1. **`net.ipv4.ip_forward` dinonaktifkan menjadi `0`** (termasuk `conf.*.forwarding = 0`), sehingga `Shigeru` berhenti meneruskan paket antar-interface.
+2. **Default route dibelokkan ke router anak `Makoto`** (`default via 10.69.4.146 dev eth2`), bukan ke upstream `Gendo` (`10.69.4.165 dev eth0`).
+3. **Rute `blackhole 10.69.4.72/29`** ditambahkan di tabel `main`, menjatuhkan seluruh traffic menuju `Switch-Dogma` (`Lilith`).
+4. **Policy routing rule `90: from all iif eth1 lookup 100` dengan isi `unreachable default table 100`** menangkap seluruh paket yang masuk dari `Switch-Monolith` (`Armisael`) sebelum sempat memakai tabel `main`.
+
+**Penjelasan gejala:**
+- `Armisael` tetap bisa ping gateway-nya sendiri (`10.69.4.81`) karena paket ditujukan ke alamat lokal router (`table local` prioritas `0` berada di atas aturan `90`) dan tidak memerlukan `ip_forward = 1`.
+- `Lilith` tidak mendapat jawaban dari `Armisael` karena forwarding mati (`ip_forward = 0`), paket balasan dari `Armisael` di `eth1` langsung ditolak oleh `rule 90 -> table 100 unreachable`, dan rute balik ke `10.69.4.72/29` terkena `blackhole`.
+
+**Perbaikan (`Shigeru`):**
+
+```sh
+ip route del blackhole 10.69.4.72/29
+ip rule del pref 90
+ip route flush table 100
+bash /root/shigeru.sh   # mengembalikan ip_forward=1, default via 10.69.4.165 dev eth0, dan rute 10.69.4.88/29
+```
+
+**Bukti verifikasi ([evidence/babak2/soal9.txt](evidence/babak2/soal9.txt)):**
+- `Lilith` → `Armisael` (`10.69.4.83`): `3 transmitted, 3 received, 0% packet loss`.
+- `Armisael` → `Lilith` (`10.69.4.74`) dan `8.8.8.8`: `0% packet loss`.
+
+<!-- TODO: screenshot hasil perbaikan Soal 9 di Shigeru dan ping Lilith -> Armisael -->
+
+---
+
+### Soal 10: Para Pilot Terkunci di Dalam (`break_nat.sh` di `Misato` & `Gendo`)
+
+**Dua penyebab yang ditemukan:**
+1. **Di `Misato` (tabel `nat` `POSTROUTING`):** ditambahkan rule:
+   ```text
+   -A POSTROUTING -s 10.69.4.64/29 ! -d 10.69.0.0/16 -o eth0 -j SNAT --to-source 172.31.99.1
+   ```
+   Untuk tujuan non-internal (internet `8.8.8.8`), alamat sumber `Switch-Cage` (`10.69.4.64/29`) diterjemahkan lebih dulu oleh `Misato` menjadi `172.31.99.1`, sehingga di `Gendo` paket tersebut tidak cocok dengan aturan `FORWARD` maupun `MASQUERADE` `10.69.0.0/21` dan langsung di-`DROP`.
+2. **Di `Gendo` (tabel `nat` `POSTROUTING`):** disisipkan rule di atas `MASQUERADE`:
+   ```text
+   -A POSTROUTING -s 10.69.4.64/29 -o eth0 -j RETURN
+   ```
+   Jika hanya `Misato` yang dibersihkan, paket `Switch-Cage` keluar ke `NAT1` tanpa NAT karena `RETURN` menghentikan evaluasi chain `POSTROUTING` sebelum rule `MASQUERADE`.
+
+**Jawaban pertanyaan analisis:**
+- **Mengapa `Switch-Cage` terdampak tetapi `Switch-Intel` (`Spy`) tidak:** kedua rule sabotase menyasar spesifik prefix `10.69.4.64/29` (`Switch-Cage` di bawah `Misato`), sedangkan `Spy` berada pada `10.69.4.100/30` di bawah `Kaji`. Sementara `Cage -> Lilith` (`10.69.4.74`) tetap normal karena tujuan masih berada di dalam `10.69.0.0/16` (`! -d 10.69.0.0/16` tidak cocok).
+- **Di router mana alamat sumber diterjemahkan:** saat sabotase aktif ke internet, alamat sumber diterjemahkan lebih dulu di **`Misato`** menjadi `172.31.99.1`; dalam kondisi normal setelah perbaikan, terjemahan alamat sumber (`MASQUERADE`) hanya terjadi di router tepi **`Gendo`** (`eth0` menuju `NAT1`).
+
+**Perbaikan (`Misato` & `Gendo`):**
+
+```sh
+# Dijalankan di Misato
+iptables -t nat -D POSTROUTING -s 10.69.4.64/29 ! -d 10.69.0.0/16 -o eth0 -j SNAT --to-source 172.31.99.1
+
+# Dijalankan di Gendo
+iptables -t nat -D POSTROUTING -s 10.69.4.64/29 -o eth0 -j RETURN
+bash /root/gendo.sh
+```
+
+**Bukti verifikasi ([evidence/babak2/soal10.txt](evidence/babak2/soal10.txt)):**
+- `Unit-01`, `Unit-02`, `Unit-00`, `Spy`, dan `Armisael` seluruhnya berhasil `ping -c 3 8.8.8.8` (`0% packet loss`).
+
+<!-- TODO: screenshot hasil perbaikan Soal 10 di Misato/Gendo dan ping Unit-01 -> 8.8.8.8 -->
+
+---
+
+### Soal 11: Casper Harus Jadi Hantu (`Magi-Casper`)
+
+Pada [script/magi-casper.sh](script/magi-casper.sh) (`/root/magi-casper.sh`), ditambahkan aturan idempoten untuk membuang seluruh ICMP `echo-request` masuk sambil menjaga ping keluar (`echo-reply`) dan layanan TCP `5000` tetap berjalan:
+
+```sh
+iptables -C INPUT -p icmp --icmp-type echo-request -j DROP 2>/dev/null || \
+  iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+```
+
+**Bukti verifikasi ([evidence/babak2/soal11.txt](evidence/babak2/soal11.txt)):**
+- `Magi-Balthasar` (`10.69.4.59`) → `ping 10.69.4.58`: `100% packet loss` (gagal, meski satu switch).
+- `Lilith` (`10.69.4.74`) → `ping 10.69.4.58`: `100% packet loss` (gagal).
+- `Magi-Casper` → `ping 10.69.4.59` (`Magi-Balthasar`) & `10.69.4.74` (`Lilith`): keduanya `3 received, 0% packet loss`.
+- `Lilith` → `Magi-Casper:5000` (`nc -N -w 2`): `exit=0`, pesan tercatat di `/var/log/magi-5000.log`.
+
+<!-- TODO: screenshot mode hantu Casper Soal 11 -->
+
+---
+
+### Soal 12: Teknisi yang Kelewat Semangat (`break_fw.sh` di `Magi-Casper`)
+
+**Empat penyebab yang ditemukan:**
+1. **Policy `INPUT` diubah menjadi `DROP` tanpa rule `ESTABLISHED,RELATED`**, sehingga balasan ping `8.8.8.8` maupun balasan HTTP/DNS untuk `apt-get update` terbuang di `INPUT`.
+2. **Rule `-A INPUT -p icmp -j DROP`** memblokir seluruh tipe ICMP (bukan hanya `echo-request`), ikut menghalangi balasan ICMP untuk ping keluar.
+3. **Tidak ada rule izin masuk untuk layanan TCP port `5000`**, sehingga `Unit-00` gagal terhubung ke port `5000` Casper.
+4. **Rule `-A OUTPUT -p udp --dport 53 -j DROP`** memblokir query DNS keluar, sehingga `apt-get update` gagal me-resolve `deb.debian.org`.
+
+**Perbaikan tanpa membatalkan tujuan hardening (`Magi-Casper`, [script/magi-casper.sh](script/magi-casper.sh)):**
+Menghapus dua rule sabotase (`-D INPUT -p icmp -j DROP` dan `-D OUTPUT -p udp --dport 53 -j DROP`), lalu menerapkan policy `INPUT DROP` dan `FORWARD DROP` dengan aturan izin minimal secara idempoten:
+
+```text
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 5000 -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -j DROP
+```
+
+**Bukti verifikasi ([evidence/babak2/soal12.txt](evidence/babak2/soal12.txt)):**
+- `Unit-00` (`10.69.4.68`) → `Magi-Casper:5000` (`nc -N -w 2 10.69.4.58 5000`): `exit=0`, pesan masuk ke `/var/log/magi-5000.log`.
+- `apt-get update` di `Magi-Casper`: berhasil (`Hit` seluruh repositori Debian, tanpa error DNS).
+- `Magi-Casper` → `ping 8.8.8.8`, `Magi-Balthasar`, `Lilith`: seluruhnya `0% packet loss`.
+- Ping masuk dari `Magi-Balthasar` & `Lilith` ke `Magi-Casper` serta koneksi ke port `22` dari `Unit-00` tetap ditolak (`policy INPUT DROP`).
+
+<!-- TODO: screenshot iptables -S, nc Unit-00 -> Casper:5000, dan apt-get update @ Magi-Casper -->
+
+---
+
+**Handoff ke Partner:** proyek diekspor ke [K-11-MODUL-5.gns3project](K-11-MODUL-5.gns3project) dengan panduan lanjutan untuk Soal 13–20 di [HANDOFF.md](HANDOFF.md).

@@ -1,0 +1,77 @@
+=== SOAL 9: SABOTASE break_routing.sh DI SHIGERU ===
+
+--- Penyebab yang ditemukan dari diff state Shigeru ---
+1. net.ipv4.ip_forward diubah menjadi 0 (beserta conf.*.forwarding=0).
+2. Default route diubah ke Makoto (default via 10.69.4.146 dev eth2), bukan Gendo (10.69.4.165 dev eth0).
+3. Rute blackhole ditambahkan untuk subnet Dogma/Lilith: blackhole 10.69.4.72/29.
+4. Policy routing rule 90 (from all iif eth1 lookup 100) + unreachable default table 100 memblokir paket dari Switch-Monolith (Armisael).
+
+--- State Shigeru setelah perbaikan ---
+default via 10.69.4.165 dev eth0 
+10.69.4.80/29 dev eth1 proto kernel scope link src 10.69.4.81 
+10.69.4.88/29 via 10.69.4.146 dev eth2 
+10.69.4.144/30 dev eth2 proto kernel scope link src 10.69.4.145 
+10.69.4.164/30 dev eth0 proto kernel scope link src 10.69.4.166 
+local 10.69.4.81 dev eth1 table local proto kernel scope host src 10.69.4.81 
+broadcast 10.69.4.87 dev eth1 table local proto kernel scope link src 10.69.4.81 
+local 10.69.4.145 dev eth2 table local proto kernel scope host src 10.69.4.145 
+broadcast 10.69.4.147 dev eth2 table local proto kernel scope link src 10.69.4.145 
+local 10.69.4.166 dev eth0 table local proto kernel scope host src 10.69.4.166 
+broadcast 10.69.4.167 dev eth0 table local proto kernel scope link src 10.69.4.166 
+local 127.0.0.0/8 dev lo table local proto kernel scope host src 127.0.0.1 
+local 127.0.0.1 dev lo table local proto kernel scope host src 127.0.0.1 
+broadcast 127.255.255.255 dev lo table local proto kernel scope link src 127.0.0.1 
+fe80::/64 dev eth0 proto kernel metric 256 pref medium
+fe80::/64 dev eth1 proto kernel metric 256 pref medium
+fe80::/64 dev eth2 proto kernel metric 256 pref medium
+local ::1 dev lo table local proto kernel metric 0 pref medium
+local fe80::42:b2ff:fe50:c900 dev eth0 table local proto kernel metric 0 pref medium
+local fe80::42:b2ff:fe50:c901 dev eth1 table local proto kernel metric 0 pref medium
+local fe80::42:b2ff:fe50:c902 dev eth2 table local proto kernel metric 0 pref medium
+multicast ff00::/8 dev eth0 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev eth1 table local proto kernel metric 256 pref medium
+multicast ff00::/8 dev eth2 table local proto kernel metric 256 pref medium
+
+0:	from all lookup local
+32766:	from all lookup main
+32767:	from all lookup default
+
+net.ipv4.ip_forward = 1
+
+--- Hasil uji konektivitas setelah perbaikan ---
+--- Lilith -> Armisael (10.69.4.83) ---
+PING 10.69.4.83 (10.69.4.83) 56(84) bytes of data.
+64 bytes from 10.69.4.83: icmp_seq=1 ttl=60 time=0.974 ms
+64 bytes from 10.69.4.83: icmp_seq=2 ttl=60 time=1.83 ms
+64 bytes from 10.69.4.83: icmp_seq=3 ttl=60 time=1.81 ms
+
+--- 10.69.4.83 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 0.974/1.536/1.826/0.397 ms
+--- Armisael -> Lilith (10.69.4.74) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=60 time=1.12 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=60 time=1.24 ms
+64 bytes from 10.69.4.74: icmp_seq=3 ttl=60 time=1.03 ms
+
+--- 10.69.4.74 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 1.029/1.131/1.244/0.088 ms
+--- Armisael -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=30.4 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=43.8 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=31.2 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 30.440/35.138/43.813/6.140 ms
+--- Radar-Array -> Lilith (10.69.4.74) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=59 time=1.25 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=59 time=2.03 ms
+64 bytes from 10.69.4.74: icmp_seq=3 ttl=59 time=2.31 ms
+
+--- 10.69.4.74 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 1.251/1.861/2.309/0.447 ms

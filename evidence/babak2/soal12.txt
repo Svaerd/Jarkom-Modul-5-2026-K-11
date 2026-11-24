@@ -1,0 +1,70 @@
+=== SOAL 12: SABOTASE break_fw.sh DI MAGI-CASPER ===
+
+--- Empat penyebab yang ditemukan ---
+1. Policy INPUT diubah ke DROP tanpa mengizinkan conntrack ESTABLISHED,RELATED (balasan ping 8.8.8.8, balasan DNS/HTTP apt-get ter-drop).
+2. Rule '-A INPUT -p icmp -j DROP' memblokir seluruh protokol ICMP (bukan hanya echo-request).
+3. Tidak ada rule izin masuk TCP port 5000 pada INPUT (Unit-00 gagal mengakses layanan Casper).
+4. Rule '-A OUTPUT -p udp --dport 53 -j DROP' memblokir query DNS keluar dari Magi-Casper (apt-get update gagal resolve deb.debian.org).
+
+--- iptables -S @ Magi-Casper setelah perbaikan (idempoten 2x run) ---
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 5000 -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -j DROP
+
+--- Unit-00 -> Casper TCP 5000 ---
+exit=0
+Log /var/log/magi-5000.log:
+Uji Soal 12 Unit-00 -> Casper 5000
+
+--- apt-get update @ Magi-Casper ---
+Hit:1 http://deb.debian.org/debian trixie InRelease
+Hit:2 http://deb.debian.org/debian trixie-updates InRelease
+Hit:3 http://deb.debian.org/debian-security trixie-security InRelease
+Reading package lists...
+
+--- Magi-Casper -> ping 8.8.8.8 (rc=0) ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=36.7 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=35.3 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=33.4 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 33.423/35.145/36.697/1.341 ms
+
+--- Magi-Casper -> ping Magi-Balthasar (10.69.4.59) (rc=0) ---
+PING 10.69.4.59 (10.69.4.59) 56(84) bytes of data.
+64 bytes from 10.69.4.59: icmp_seq=1 ttl=64 time=0.334 ms
+64 bytes from 10.69.4.59: icmp_seq=2 ttl=64 time=0.520 ms
+
+--- 10.69.4.59 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1034ms
+rtt min/avg/max/mdev = 0.334/0.427/0.520/0.093 ms
+
+--- Magi-Casper -> ping Lilith (10.69.4.74) (rc=0) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=62 time=0.696 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=62 time=1.18 ms
+
+--- 10.69.4.74 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1031ms
+rtt min/avg/max/mdev = 0.696/0.937/1.178/0.241 ms
+
+--- Magi-Balthasar -> ping Casper (10.69.4.58) [tetap ditolak] (rc=1) ---
+PING 10.69.4.58 (10.69.4.58) 56(84) bytes of data.
+
+--- 10.69.4.58 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1030ms
+
+--- Lilith -> ping Casper (10.69.4.58) [tetap ditolak] (rc=1) ---
+PING 10.69.4.58 (10.69.4.58) 56(84) bytes of data.
+
+--- 10.69.4.58 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1045ms
+
+--- Unit-00 -> Casper:22 [ditolak policy INPUT DROP] (rc=1) ---
+nc: connect to 10.69.4.58 port 22 (tcp) timed out: Operation in progress

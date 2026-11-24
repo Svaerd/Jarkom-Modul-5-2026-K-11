@@ -1,0 +1,44 @@
+=== SOAL 11: CASPER JADI HANTU (Magi-Casper) ===
+
+--- iptables -S @ Magi-Casper ---
+-P INPUT ACCEPT
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -j DROP
+
+--- Magi-Balthasar -> ping Magi-Casper (10.69.4.58) [harus gagal] (rc=1) ---
+PING 10.69.4.58 (10.69.4.58) 56(84) bytes of data.
+
+--- 10.69.4.58 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1016ms
+
+--- Lilith -> ping Magi-Casper (10.69.4.58) [harus gagal] (rc=1) ---
+PING 10.69.4.58 (10.69.4.58) 56(84) bytes of data.
+
+--- 10.69.4.58 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1057ms
+
+--- Magi-Casper -> ping Magi-Balthasar (10.69.4.59) [harus berhasil] (rc=0) ---
+PING 10.69.4.59 (10.69.4.59) 56(84) bytes of data.
+64 bytes from 10.69.4.59: icmp_seq=1 ttl=64 time=0.310 ms
+64 bytes from 10.69.4.59: icmp_seq=2 ttl=64 time=0.427 ms
+64 bytes from 10.69.4.59: icmp_seq=3 ttl=64 time=0.300 ms
+
+--- 10.69.4.59 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2083ms
+rtt min/avg/max/mdev = 0.300/0.345/0.427/0.057 ms
+
+--- Magi-Casper -> ping Lilith (10.69.4.74) [harus berhasil] (rc=0) ---
+PING 10.69.4.74 (10.69.4.74) 56(84) bytes of data.
+64 bytes from 10.69.4.74: icmp_seq=1 ttl=62 time=0.667 ms
+64 bytes from 10.69.4.74: icmp_seq=2 ttl=62 time=0.931 ms
+64 bytes from 10.69.4.74: icmp_seq=3 ttl=62 time=1.24 ms
+
+--- 10.69.4.74 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2056ms
+rtt min/avg/max/mdev = 0.667/0.945/1.238/0.233 ms
+
+--- nc TCP 5000 dari Lilith ke Casper ---
+exit=0
+Log /var/log/magi-5000.log:
+Uji Soal 11 Casper hantu

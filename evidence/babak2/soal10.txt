@@ -1,0 +1,81 @@
+=== SOAL 10: SABOTASE break_nat.sh DI MISATO DAN GENDO ===
+
+--- Dua penyebab yang ditemukan ---
+1. Di Misato (tabel nat POSTROUTING): rule '-A POSTROUTING -s 10.69.4.64/29 ! -d 10.69.0.0/16 -o eth0 -j SNAT --to-source 172.31.99.1'.
+   Saat menuju internet, IP sumber Switch-Cage langsung diubah Misato menjadi 172.31.99.1 sehingga tidak lagi cocok dengan 10.69.0.0/21 di firewall FORWARD dan MASQUERADE Gendo.
+   Traffic Cage -> Lilith (10.69.4.74) tidak terkena karena ! -d 10.69.0.0/16 mengecualikan tujuan jaringan internal.
+2. Di Gendo (tabel nat POSTROUTING): rule '-A POSTROUTING -s 10.69.4.64/29 -o eth0 -j RETURN' tepat di atas MASQUERADE.
+   Jika hanya Misato yang dibersihkan, paket Cage keluar melewati Gendo eth0 tanpa NAT (karena RETURN keluar dari chain sebelum MASQUERADE).
+3. Kenapa Cage terdampak tapi Intel (Spy) tidak: kedua rule menarget spesifik prefix 10.69.4.64/29 (Switch-Cage) dan Spy berada di cabang Kaji (10.69.4.100/30).
+4. Di router mana alamat sumber diterjemahkan: saat sabotase di Misato (menjadi 172.31.99.1); pada kondisi normal setelah perbaikan, terjemahan sumber hanya di Gendo (MASQUERADE keluar eth0).
+
+--- State tabel nat setelah perbaikan ---
+Misato:
+-P PREROUTING ACCEPT
+-P INPUT ACCEPT
+-P OUTPUT ACCEPT
+-P POSTROUTING ACCEPT
+
+Gendo (nat & filter):
+-P PREROUTING ACCEPT
+-P INPUT ACCEPT
+-P OUTPUT ACCEPT
+-P POSTROUTING ACCEPT
+-A POSTROUTING -s 10.69.0.0/21 -o eth0 -j MASQUERADE
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i eth0 -p udp -m udp --sport 67 --dport 68 -j ACCEPT
+-A INPUT -s 10.69.0.0/21 ! -i eth0 -j ACCEPT
+-A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 ! -i eth0 -o eth0 -j ACCEPT
+-A FORWARD -s 10.69.0.0/21 -d 10.69.0.0/21 ! -i eth0 ! -o eth0 -j ACCEPT
+
+--- Hasil uji konektivitas setelah perbaikan ---
+--- Unit-01 -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=40.7 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=43.8 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=42.5 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 40.691/42.350/43.825/1.286 ms
+--- Unit-02 -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=46.9 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=43.3 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=37.8 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 37.818/42.660/46.860/3.719 ms
+--- Unit-00 -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=42.9 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=32.5 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=32.3 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 32.336/35.928/42.933/4.953 ms
+--- Spy -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=32.9 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=44.1 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=44.0 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 32.864/40.317/44.057/5.270 ms
+--- Armisael -> 8.8.8.8 ---
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=111 time=45.3 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=111 time=37.0 ms
+64 bytes from 8.8.8.8: icmp_seq=3 ttl=111 time=41.2 ms
+
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 37.001/41.181/45.305/3.390 ms

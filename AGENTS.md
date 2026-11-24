@@ -7,11 +7,11 @@ Konteks teknis pengerjaan **Praktikum Modul 5 — Operation Geofront** (Komunika
 
 ## Pembagian Tugas
 
-- **Husam (Tahap 1–3, Soal 1–12):**
+- **Husam (Tahap 1–3, Soal 1–12, selesai):**
   - **Tahap 1 (Soal 1, selesai):** VLSM, spreadsheet `.xlsx`, pohon IP (`vlsm-tree.png`), pemetaan kabel/interface/routing, `README.md` Soal 1.
-  - **Tahap 2 (Babak 1, Soal 2–8):** Build topologi 60 node di local GNS3, deploy IP/static routing/NAT/firewall Gendo (`/root/gendo.sh`), IP permanen non-router, layanan `nc` MAGI + `Pen-Pen` + `Tokyo3-Core`, uji lengkap, update `README.md`.
-  - **Tahap 3 (Babak 2, Soal 9–12 + Handoff):** Eksekusi & diagnosa sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`), mode hantu `Magi-Casper`, export `.gns3project`, update `README.md` & dokumen handoff ke partner.
-- **Partner (Soal 13–20):** Babak 3 (Mengamankan MAGI dan Zona Sensitif) dan Babak Final (Uji Kebakaran Geofront).
+  - **Tahap 2 (Babak 1, Soal 2–8, selesai):** Build topologi 60 node di local GNS3 (`K-11-MODUL-5`), deploy IP/static routing/NAT/firewall Gendo (`/root/gendo.sh`), IP permanen 25 non-router, layanan `nc` MAGI + `Pen-Pen` + `Tokyo3-Core`, bukti di `evidence/babak1/`, update `README.md` + `Attachments/`.
+  - **Tahap 3 (Babak 2, Soal 9–12 + Handoff, selesai):** Eksekusi & diagnosa sabotase (`break_routing.sh`, `break_nat.sh`, `break_fw.sh`) secara buta, mode hantu + hardening `Magi-Casper`, export `K-11-MODUL-5.gns3project`, bukti di `evidence/babak2/`, update `README.md` & tulis `HANDOFF.md` ke partner.
+- **Partner (Soal 13–20):** Babak 3 (Mengamankan MAGI dan Zona Sensitif) dan Babak Final (Uji Kebakaran Geofront) — lihat [HANDOFF.md](HANDOFF.md).
 
 ## Lingkungan GNS3
 
